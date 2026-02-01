@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const cnpj = input.value.replace(/\D/g, '')
 
     try {
-      // CORREÇÃO: Porta 5000 e rota /consulta conforme seu backend em Python
-      const resposta = await fetch(`http://127.0.0.1:5000/consulta?cnpj=${cnpj}`)
+      // ATUALIZADO: Usando o servidor oficial no Render em vez do localhost
+      const resposta = await fetch(`https://consulta-cnpj-jpyl.onrender.com/consulta?cnpj=${cnpj}`)
       
       if (!resposta.ok) {
         throw new Error('Erro na requisição ao servidor')
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (err) {
       console.error('Erro detalhado:', err)
-      alert('Erro ao consultar CNPJ! Verifique se o backend Python está rodando na porta 5000.')
+      alert('Erro ao consultar CNPJ! Verifique sua conexão com a internet.')
     }
   })
 })
