@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consulta de CNPJ</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <h1>Consultar CNPJ</h1>
+    <form id="cnpj-form">
+      <input type="text" id="cnpj-input" placeholder="Digite o CNPJ (ex: 47.701.296/0001-31)" />
+      <button type="submit">Pesquisar</button>
+    </form>
+
+    <div id="resultado">
+      <p><strong>Razão Social:</strong> <span id="razao_social">-</span></p>
+      <p><strong>Nome Fantasia:</strong> <span id="nome_fantasia">-</span></p>
+      <p><strong>CNPJ:</strong> <span id="cnpj">-</span></p>
+      <p><strong>Data de Abertura:</strong> <span id="abertura">-</span></p>
+      <p><strong>Atividade Principal:</strong> <span id="atividade">-</span></p>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="info">Informações</div>
+        <div class="tab" data-tab="atividade">Atividade Econômica</div>
+        <div class="tab" data-tab="socios">Sócios</div>
+      </div>
+
+      <div id="info" class="tab-content active">
+        <table>
+          <tr>
+            <th>Razão Social</th>
+            <td id="info_razao">-</td>
+          </tr>
+          <tr>
+            <th>Data de Abertura</th>
+            <td id="info_abertura">-</td>
+          </tr>
+          <tr>
+            <th>CNPJ</th>
+            <td id="info_cnpj">-</td>
+          </tr>
+          <tr>
+            <th>Logradouro</th>
+            <td id="info_logradouro">-</td>
+          </tr>
+          <tr>
+            <th>Número</th>
+            <td id="info_numero">-</td>
+          </tr>
+          <tr>
+            <th>CEP</th>
+            <td id="info_cep">-</td>
+          </tr>
+          <tr>
+            <th>Bairro</th>
+            <td id="info_bairro">-</td>
+          </tr>
+          <tr>
+            <th>Município</th>
+            <td id="info_municipio">-</td>
+          </tr>
+          <tr>
+            <th>UF</th>
+            <td id="info_uf">-</td>
+          </tr>
+          <tr>
+            <th>Capital Social</th>
+            <td id="info_capital">-</td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="atividade" class="tab-content">
+        <table id="atividade_table">
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+          </tr>
+        </table>
+      </div>
+
+      <div id="socios" class="tab-content">
+        <table id="socios_table">
+          <tr>
+            <th>Nome</th>
+            <th>CPF/CNPJ</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
