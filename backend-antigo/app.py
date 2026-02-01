@@ -1,14 +1,20 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
+import os
 
 app = Flask(__name__)
-# Libera o acesso para que seu site consiga consultar o servidor
-CORS(app)
+
+# AJUSTE 1: Liberação total do CORS para que o App Android consiga acessar
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/consulta')
 def consulta_cnpj():
     cnpj = request.args.get('cnpj')
+    
+    # Limpa o CNPJ (remove pontos e traços) caso venha formatado
+    if cnpj:
+        cnpj = ''.join(filter(str.isdigit, cnpj))
     
     if not cnpj:
         return jsonify({"erro": "CNPJ não fornecido"}), 400
@@ -16,15 +22,13 @@ def consulta_cnpj():
     url = f'https://brasilapi.com.br/api/cnpj/v1/{cnpj}'
     
     try:
-        # Faz a requisição para a BrasilAPI
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, timeout=15)
         
         if r.status_code != 200:
             return jsonify({"erro": "CNPJ não encontrado ou API fora do ar"}), r.status_code
         
         data = r.json()
 
-        # Monta a resposta exatamente como o seu main.js espera
         resultado = {
             "razao_social": data.get("razao_social"),
             "nome_fantasia": data.get("nome_fantasia"),
@@ -45,11 +49,12 @@ def consulta_cnpj():
 
         return jsonify(resultado)
 
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         return jsonify({"erro": "Erro na conexão com a API externa"}), 500
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
 
 if __name__ == '__main__':
-    # O Gunicorn usará o "app", mas isso aqui serve para testes locais
-    app.run(debug=True)
+    # AJUSTE 2: Configuração necessária para o Render identificar a porta correta
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)

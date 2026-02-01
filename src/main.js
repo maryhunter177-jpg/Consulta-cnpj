@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('cnpj-form')
   const input = document.getElementById('cnpj-input')
+  const btnPesquisar = form.querySelector('button') // Seleciona o botão de busca
   const abas = document.querySelectorAll('.tab')
   const conteudos = document.querySelectorAll('.tab-content')
 
@@ -16,21 +17,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
+    
     // Limpa o CNPJ para enviar apenas números
     const cnpj = input.value.replace(/\D/g, '')
 
+    if (cnpj.length !== 14) {
+      alert('Por favor, digite um CNPJ válido com 14 dígitos.')
+      return
+    }
+
+    // Feedback visual: desabilita o botão enquanto carrega
+    btnPesquisar.innerText = 'Buscando...'
+    btnPesquisar.disabled = true
+
     try {
-      // ATUALIZADO: Usando o servidor oficial no Render em vez do localhost
-      const resposta = await fetch(`https://consulta-cnpj-jpyl.onrender.com/consulta?cnpj=${cnpj}`)
+      // URL correta apontando para o seu backend no Render
+      const urlServidor = `https://consulta-cnpj-jpyl.onrender.com/consulta?cnpj=${cnpj}`
+      
+      const resposta = await fetch(urlServidor, {
+        method: 'GET',
+        mode: 'cors', // Garante que o navegador/android aceite a resposta do Render
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
       
       if (!resposta.ok) {
-        throw new Error('Erro na requisição ao servidor')
+        throw new Error(`Erro no servidor: ${resposta.status}`)
       }
 
       const dados = await resposta.json()
 
       if (dados.erro) {
-        alert(dados.erro)
+        alert(`Aviso: ${dados.erro}`)
         return
       }
 
@@ -56,28 +75,30 @@ document.addEventListener('DOMContentLoaded', () => {
       // Atividade econômica
       const tabelaAtv = document.getElementById('atividade_table')
       tabelaAtv.innerHTML = '<tr><th>Código</th><th>Descrição</th></tr>'
-
-      // Principal
       tabelaAtv.innerHTML += `<tr><td>${dados.codigo_atividade_principal || '-'}</td><td>${dados.atividade_principal || '-'}</td></tr>`
 
-      // Secundárias
       if (dados.atividades_secundarias && dados.atividades_secundarias.length > 0) {
         dados.atividades_secundarias.forEach((atv) => {
-          tabelaAtv.innerHTML += `<tr><td>${atv.codigo}</td><td>${atv.descricao}</td></tr>`
+          tabelaAtv.innerHTML += `<tr><td>${atv.code || atv.codigo || '-'}</td><td>${atv.text || atv.descricao || '-'}</td></tr>`
         })
       }
 
       // Sócios
       const tabelaSocios = document.getElementById('socios_table')
-      tabelaSocios.innerHTML = '<tr><th>Nome</th><th>CPF/CNPJ</th></tr>'
+      tabelaSocios.innerHTML = '<tr><th>Nome</th><th>Cargo</th></tr>'
       if (dados.socios && dados.socios.length > 0) {
         dados.socios.forEach((socio) => {
-          tabelaSocios.innerHTML += `<tr><td>${socio.nome_socio || '-'}</td><td>${socio.cnpj_cpf_do_socio || '-'}</td></tr>`
+          tabelaSocios.innerHTML += `<tr><td>${socio.nome || socio.nome_socio || '-'}</td><td>${socio.qual || socio.qualificacao_socio || '-'}</td></tr>`
         })
       }
+      
     } catch (err) {
       console.error('Erro detalhado:', err)
-      alert('Erro ao consultar CNPJ! Verifique sua conexão com a internet.')
+      alert('Erro ao consultar! O servidor pode estar "acordando". Tente novamente em 30 segundos.')
+    } finally {
+      // Restaura o botão após o término
+      btnPesquisar.innerText = 'Pesquisar'
+      btnPesquisar.disabled = false
     }
   })
 })

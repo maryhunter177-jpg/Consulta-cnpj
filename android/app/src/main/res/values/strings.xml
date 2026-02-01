@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Consulta CNPJ</string>
+    <string name="title_activity_main">Consulta CNPJ</string>
+    <string name="package_name">com.mary.consultacnpj</string>
+    <string name="custom_url_scheme">com.mary.consultacnpj</string>
+</resources>
