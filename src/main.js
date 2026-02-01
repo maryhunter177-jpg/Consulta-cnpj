@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('cnpj-form')
   const input = document.getElementById('cnpj-input')
-  const btnPesquisar = form.querySelector('button') // Seleciona o botão de busca
+  const btnPesquisar = form.querySelector('button')
   const abas = document.querySelectorAll('.tab')
   const conteudos = document.querySelectorAll('.tab-content')
 
@@ -17,8 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
-    
-    // Limpa o CNPJ para enviar apenas números
     const cnpj = input.value.replace(/\D/g, '')
 
     if (cnpj.length !== 14) {
@@ -26,20 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return
     }
 
-    // Feedback visual: desabilita o botão enquanto carrega
     btnPesquisar.innerText = 'Buscando...'
     btnPesquisar.disabled = true
 
     try {
-      // URL correta apontando para o seu backend no Render
+      // URL definitiva do seu backend no Render
       const urlServidor = `https://consulta-cnpj-jpyl.onrender.com/consulta?cnpj=${cnpj}`
       
       const resposta = await fetch(urlServidor, {
         method: 'GET',
-        mode: 'cors', // Garante que o navegador/android aceite a resposta do Render
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' }
       })
       
       if (!resposta.ok) {
@@ -53,14 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return
       }
 
-      // Preenchimento das Informações Principais
+      // Preenchimento dos dados na tela
       document.getElementById('razao_social').innerText = dados.razao_social || '-'
       document.getElementById('nome_fantasia').innerText = dados.nome_fantasia || '-'
       document.getElementById('cnpj').innerText = dados.cnpj || '-'
       document.getElementById('abertura').innerText = dados.data_abertura || '-'
       document.getElementById('atividade').innerText = dados.atividade_principal || '-'
 
-      // Detalhes da Tabela de Informações
       document.getElementById('info_razao').innerText = dados.razao_social || '-'
       document.getElementById('info_abertura').innerText = dados.data_abertura || '-'
       document.getElementById('info_cnpj').innerText = dados.cnpj || '-'
@@ -72,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('info_uf').innerText = dados.uf || '-'
       document.getElementById('info_capital').innerText = dados.capital_social || '-'
 
-      // Atividade econômica
       const tabelaAtv = document.getElementById('atividade_table')
       tabelaAtv.innerHTML = '<tr><th>Código</th><th>Descrição</th></tr>'
       tabelaAtv.innerHTML += `<tr><td>${dados.codigo_atividade_principal || '-'}</td><td>${dados.atividade_principal || '-'}</td></tr>`
@@ -83,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       }
 
-      // Sócios
       const tabelaSocios = document.getElementById('socios_table')
       tabelaSocios.innerHTML = '<tr><th>Nome</th><th>Cargo</th></tr>'
       if (dados.socios && dados.socios.length > 0) {
@@ -94,9 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
     } catch (err) {
       console.error('Erro detalhado:', err)
-      alert('Erro ao consultar! O servidor pode estar "acordando". Tente novamente em 30 segundos.')
+      alert('Erro ao consultar! O servidor pode estar "acordando". Tente novamente em breve.')
     } finally {
-      // Restaura o botão após o término
       btnPesquisar.innerText = 'Pesquisar'
       btnPesquisar.disabled = false
     }

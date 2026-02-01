@@ -5,14 +5,14 @@ import os
 
 app = Flask(__name__)
 
-# AJUSTE 1: Liberação total do CORS para que o App Android consiga acessar
+# Liberação total para o app Android não ser bloqueado
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/consulta')
 def consulta_cnpj():
     cnpj = request.args.get('cnpj')
     
-    # Limpa o CNPJ (remove pontos e traços) caso venha formatado
+    # Limpa o CNPJ para garantir que a API receba só números
     if cnpj:
         cnpj = ''.join(filter(str.isdigit, cnpj))
     
@@ -55,6 +55,6 @@ def consulta_cnpj():
         return jsonify({"erro": str(e)}), 500
 
 if __name__ == '__main__':
-    # AJUSTE 2: Configuração necessária para o Render identificar a porta correta
+    # Configuração obrigatória para o Render
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
